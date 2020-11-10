@@ -38,7 +38,7 @@ public class Player : MonoBehaviour
         anim.SetBool("isRun", moveVec != Vector3.zero);
         anim.SetBool("isWalk", wDown);
 
-        transform.LookAt(transform.position + moveVec);
+        transform.LookAt(transform.position + moveVec); //플레이어를 방향키 움직이는대로 회전시켜줌
 
     }
 }
