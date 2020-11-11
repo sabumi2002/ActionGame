@@ -77,7 +77,7 @@ public class Player : MonoBehaviour
             anim.SetTrigger("doDodge");         //애니메이션 doDodge 실행
             isDodge = true;         //Dodge가 실행중이다. 라고 알려주는 역할
 
-            Invoke("DodgeOut", 0.5f);   //시간차 함수 호출(0.4초)   (회피기 딜레이)
+            Invoke("DodgeOut", 0.5f);   //시간차 함수 호출(0.5초)   (회피기 딜레이)
         }
     }
 
