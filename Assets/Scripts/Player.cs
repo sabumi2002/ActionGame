@@ -7,8 +7,22 @@ public class Player : MonoBehaviour
     public float speed;
     public GameObject[] weapons;
     public bool[] hasWeapons;
+    public GameObject[] grenades;
+    public int hasGrenades; //수륙탄(필살기)
+
+    public int ammo;    //탄약 변수 생성
+    public int coin;        //동전
+    public int health;     //체력
+    
+
+    public int maxAmmo;    //최대치
+    public int maxCoin;
+    public int maxHealth;
+    public int maxHasGrenades;
+
     float hAxis;
     float vAxis;
+
     bool wDown;
     bool jDown;
     bool iDown;
@@ -164,13 +178,43 @@ public class Player : MonoBehaviour
         }
     }
 
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.tag == "Item") {
+            Item item = other.GetComponent<Item>();
+            switch (item.type) {
+                case Item.Type.Ammo:
+                    ammo += item.value;
+                    if (ammo > maxAmmo)
+                        ammo = maxAmmo;
+                    break;
+                case Item.Type.Coin:
+                    coin += item.value;
+                    if (coin > maxCoin)
+                        coin = maxCoin;
+                    break;
+                case Item.Type.Heart:
+                    health += item.value;
+                    if (health > maxHealth)
+                        health = maxHealth;
+                    break;
+                case Item.Type.Grenade:
+                    grenades[hasGrenades].SetActive(true);
+                    hasGrenades += item.value;
+                    if (hasGrenades > maxHasGrenades)
+                        hasGrenades = maxHasGrenades;
+                    break;
+            }
+            Destroy(other.gameObject);  // 삭제
+        }
+    }
 
     void OnTriggerStay(Collider other)      //d 
     {
         if (other.tag == "Weapon")
             nearObject = other.gameObject;
 
-        Debug.Log(nearObject.name);
+        
     }
     void OnTriggerExit(Collider other)
     {
