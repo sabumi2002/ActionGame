@@ -18,7 +18,7 @@ public class Orbit : MonoBehaviour
         transform.position = target.position + offset;  //타겟 위치 재설정
         transform.RotateAround(target.position, 
                                                 Vector3.up, 
-                                                orbitSpeed * Time.deltaTime);
+                                                orbitSpeed * Time.deltaTime);   //회전시키는 함수
         offset = transform.position - target.position;  //RotateAround()후의 위치를 가지고 목표와의 거리를 유지
     }
 }

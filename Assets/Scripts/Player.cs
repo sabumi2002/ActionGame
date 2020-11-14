@@ -25,6 +25,7 @@ public class Player : MonoBehaviour
 
     bool wDown;
     bool jDown;
+    bool fDown; //공격 키다운    fireDown
     bool iDown;
     bool sDown1;    //스왑1 (무기)
     bool sDown2;
@@ -33,6 +34,7 @@ public class Player : MonoBehaviour
     bool isJump;
     bool isDodge;
     bool isSwap;
+    bool isFireReady = true;   //공격준비
     
 
     Vector3 moveVec;
@@ -42,8 +44,9 @@ public class Player : MonoBehaviour
     Animator anim;
 
     GameObject nearObject;  //최근에 어떤 무기오브젝트를 실행했는지 알기위해 사용
-    GameObject equipWeapon; //장착중인 웨폰은 어떤것입니까?  무기가 여러개 겹치게 들지않기위해 사용
+    Weapon equipWeapon; //장착중인 웨폰은 어떤것입니까?  무기가 여러개 겹치게 들지않기위해 사용
     int equipWeaponIndex = -1;
+    float fireDelay;    //공격딜레이
 
 
     void Awake()
@@ -57,6 +60,7 @@ public class Player : MonoBehaviour
         Move();
         Turn();
         Jump();
+        Attack();
         Dodge();
         Interation();
         Swap();
@@ -67,6 +71,7 @@ public class Player : MonoBehaviour
         vAxis = Input.GetAxisRaw("Vertical");
         wDown = Input.GetButton("Walk");        //input manager에 버튼 생성후 사용(Walk)
         jDown = Input.GetButtonDown("Jump");
+        fDown = Input.GetButtonDown("Fire1");
         iDown = Input.GetButtonDown("Interation");
         sDown1 = Input.GetButtonDown("Swap1");
         sDown2 = Input.GetButtonDown("Swap2");
@@ -79,7 +84,7 @@ public class Player : MonoBehaviour
         if (isDodge)
             moveVec = dodgeVec; //회피중에는 움직임벡터 -> 회피방향 벡터로 바뀌도록 구현
 
-        if (isSwap)
+        if (isSwap || !isFireReady)
             moveVec = Vector3.zero;
 
         transform.position += moveVec * speed * (wDown ? 0.3f : 1f) * Time.deltaTime;
@@ -101,6 +106,20 @@ public class Player : MonoBehaviour
             anim.SetBool("isJump", true);
             anim.SetTrigger("doJump");
             isJump = true;
+        }
+    }
+
+    void Attack()
+    {
+        if (equipWeapon == null)
+            return;
+        fireDelay += Time.deltaTime;    //매프레임 소비한 시간을 더해줌
+        isFireReady = equipWeapon.rate < fireDelay;  //공격딜레이에 시간을 더해주고 공격가능 여부를 확인
+
+        if (fDown && isFireReady && !isDodge && !isSwap) {
+            equipWeapon.Use();  //조건이 충족되면 무기에 있는 함수 실행
+            anim.SetTrigger("doSwing"); //애니메이션은 모두 트리거로 사용
+            fireDelay = 0;  //공격딜레이를 0으로 돌려서 다음공격까지 기다리도록 작성
         }
     }
     void Dodge()
@@ -138,11 +157,11 @@ public class Player : MonoBehaviour
 
         if ((sDown1 || sDown2 || sDown3) && !isJump && !isDodge) {
             if(equipWeapon != null)
-                equipWeapon.SetActive(false);
+                equipWeapon.gameObject.SetActive(false);
 
             equipWeaponIndex = weaponIndex;
-            equipWeapon = weapons[weaponIndex];
-            equipWeapon.SetActive(true);
+            equipWeapon = weapons[weaponIndex].GetComponent<Weapon>();
+            equipWeapon.gameObject.SetActive(true);
 
             anim.SetTrigger("doSwap");
 
