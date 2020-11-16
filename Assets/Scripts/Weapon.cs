@@ -54,7 +54,7 @@ public class Weapon : MonoBehaviour
         yield return new WaitForSeconds(0.1f);  //trailRenderer와 BoxCollider를 시간차로 활성화 컨트롤
         meleeArea.enabled = true;   //BoxCollider 활성화
         trailEffect.enabled = true;     //trailRenderer 활성화
-        yield return new WaitForSeconds(0.3f);
+        yield return new WaitForSeconds(0.4f);
         meleeArea.enabled = false;
         yield return new WaitForSeconds(0.3f);
         trailEffect.enabled = false;

@@ -38,6 +38,7 @@ public class Player : MonoBehaviour
     bool isSwap;
     bool isReload;
     bool isFireReady = true;   //공격준비
+    bool isBorder;
 
     
 
@@ -92,8 +93,9 @@ public class Player : MonoBehaviour
 
         if (isSwap || !isFireReady || isReload ) //스왑하거나 공격할때 이동x
             moveVec = Vector3.zero;
+        if(!isBorder)
+            transform.position += moveVec * speed * (wDown ? 0.3f : 1f) * Time.deltaTime;
 
-        transform.position += moveVec * speed * (wDown ? 0.3f : 1f) * Time.deltaTime;
 
 
         anim.SetBool("isRun", moveVec != Vector3.zero);
@@ -232,6 +234,22 @@ public class Player : MonoBehaviour
         }
     }
 
+    void FreezeRotation()
+    {
+        rigid.angularVelocity = Vector3.zero;
+    }
+    void StopToWall()   //벽충돌방지
+    {
+        Debug.DrawRay(transform.position, transform.forward * 5, Color.green);  //DrawRay(시작위치, 쏘는방향, ray의 길이, 색깔 )
+        isBorder = Physics.Raycast(transform.position, transform.forward, 5, LayerMask.GetMask("Wall")); //(시작위치, 쏘는방향, 길이, LayerMask))
+        //Raycast(): Ray룰 쏘아 닿는 오브젝트를 감지하는 함수
+    }
+
+    private void FixedUpdate()
+    {
+        FreezeRotation();
+        StopToWall();
+    }
 
     void OnCollisionEnter(Collision collision)  //이 함수로 착지 구현 (충돌시)
     {

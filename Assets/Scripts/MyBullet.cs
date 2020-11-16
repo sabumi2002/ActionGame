@@ -12,7 +12,10 @@ public class MyBullet : MonoBehaviour
         {
             Destroy(gameObject, 3);  //3초뒤에 사라짐
         }
-        else if (collision.gameObject.tag == "Floor")
+    }
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.tag == "Wall")
         {
             Destroy(gameObject);
         }
