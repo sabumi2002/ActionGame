@@ -5,6 +5,7 @@ using UnityEngine;
 public class MyBullet : MonoBehaviour
 {
     public int damage;
+    public bool isMelee;
 
     void OnCollisionEnter(Collision collision)  //충돌 이벤트
     {
@@ -15,8 +16,7 @@ public class MyBullet : MonoBehaviour
     }
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.tag == "Wall")
-        {
+        if (!isMelee && other.gameObject.tag == "Wall") {   //근접공격 범위가 파괴되지않도록 조건추가(BoxCollider)
             Destroy(gameObject);
         }
     }

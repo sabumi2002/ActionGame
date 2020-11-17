@@ -41,6 +41,7 @@ public class Player : MonoBehaviour
     bool isReload;
     bool isFireReady = true;   //공격준비
     bool isBorder;
+    bool isDamage;
 
     
 
@@ -49,6 +50,7 @@ public class Player : MonoBehaviour
 
     Rigidbody rigid;
     Animator anim;
+    MeshRenderer[] meshs;   //Player 피격 색깔 넣기위해 사용
 
     GameObject nearObject;  //최근에 어떤 무기오브젝트를 실행했는지 알기위해 사용
     Weapon equipWeapon; //장착중인 웨폰은 어떤것입니까?  무기가 여러개 겹치게 들지않기위해 사용
@@ -56,10 +58,11 @@ public class Player : MonoBehaviour
     float fireDelay;    //공격딜레이
 
 
-    void Awake()
+    void Awake()    //초기화
     {
         rigid = GetComponent<Rigidbody>();
         anim = GetComponentInChildren<Animator>();
+        meshs = GetComponentsInChildren<MeshRenderer>();
     }
     void Update()
     {
@@ -275,7 +278,7 @@ public class Player : MonoBehaviour
         //Raycast(): Ray룰 쏘아 닿는 오브젝트를 감지하는 함수
     }
 
-    private void FixedUpdate()
+    void FixedUpdate()
     {
         FreezeRotation();
         StopToWall();
@@ -291,9 +294,11 @@ public class Player : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        if (other.tag == "Item") {
+        if (other.tag == "Item")
+        {
             Item item = other.GetComponent<Item>();
-            switch (item.type) {
+            switch (item.type)
+            {
                 case Item.Type.Ammo:
                     ammo += item.value;
                     if (ammo > maxAmmo)
@@ -318,8 +323,33 @@ public class Player : MonoBehaviour
             }
             Destroy(other.gameObject);  // 삭제
         }
-    }
+        else if (other.tag == "EnemyBullet")
+        {
+            if (!isDamage)
+            {
+                MyBullet enemyBullet = other.GetComponent<MyBullet>();
+                health -= enemyBullet.damage;
 
+                if (other.GetComponent<Rigidbody>() != null)
+                    Destroy(other.gameObject);
+
+                StartCoroutine(OnDamage());
+            }
+        }
+    }
+    IEnumerator OnDamage()
+    {
+        isDamage = true;
+        foreach (MeshRenderer mesh in meshs) {
+            mesh.material.color = Color.yellow; //player 피격 색 변경
+        }
+        yield return new WaitForSeconds(1f);    //무적타임조정
+        isDamage = false;
+        foreach (MeshRenderer mesh in meshs)
+        {
+            mesh.material.color = Color.white;  //player 피격 색 변경
+        }
+    }
     void OnTriggerStay(Collider other)      //d 
     {
         if (other.tag == "Weapon")
