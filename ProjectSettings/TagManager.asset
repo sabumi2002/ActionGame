@@ -12,6 +12,7 @@ TagManager:
   - Bullet
   - Enemy
   - EnemyBullet
+  - FinishPoint
   layers:
   - Default
   - TransparentFX

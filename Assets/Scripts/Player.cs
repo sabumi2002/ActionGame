@@ -1,9 +1,14 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Player : MonoBehaviour
 {
+    public GameManagerLogic manager;
+    public Enemy EnemyManager;
+    public int itemCount;   //item == enemy
     public float speed;
     public GameObject[] weapons;
     public bool[] hasWeapons;
@@ -334,6 +339,24 @@ public class Player : MonoBehaviour
                     Destroy(other.gameObject);
 
                 StartCoroutine(OnDamage());
+            }
+        }
+        else if (other.tag == "FinishPoint")
+        {
+            if (manager.enemyCount == manager.TotalItemCount)
+            {
+                //game clear!
+                if (manager.stage == 2)
+                    SceneManager.LoadScene(0);
+                else
+                    SceneManager.LoadScene(manager.stage + 1);
+
+            }
+            else
+            {
+                //restart..
+                SceneManager.LoadScene(manager.stage);
+
             }
         }
     }

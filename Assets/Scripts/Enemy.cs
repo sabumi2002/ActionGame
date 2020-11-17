@@ -5,6 +5,8 @@ using UnityEngine.AI;
 
 public class Enemy : MonoBehaviour
 {
+    public GameManagerLogic manager;
+    public int enemyCount;
     public enum Type { A, B, C };   //몬스터마다 구분할수있게 함
     public Type enemyType;  //enum 구분한걸 저장할수있음
     public int maxHealth;
@@ -14,6 +16,7 @@ public class Enemy : MonoBehaviour
     public GameObject bullet;
     public bool isChase;
     public bool isAttack;
+    
 
     Rigidbody rigid;
     BoxCollider boxCollider;
@@ -174,6 +177,8 @@ public class Enemy : MonoBehaviour
             isChase = false;    //적이 죽는 시점에서도 애니메이션과 플래그 셋팅
             nav.enabled = false;    //사망리액션을 유지하기위해 비활성화
             anim.SetTrigger("doDie");
+            
+            /////////////
             if (isGrenade)//수류탄 사망리액션은 큰힘과 회전을 추가
             {
                 reactVec = reactVec.normalized;
@@ -190,7 +195,9 @@ public class Enemy : MonoBehaviour
                 rigid.AddForce(reactVec * 5, ForceMode.Impulse);
                 
             }
-            Destroy(gameObject, 4); //4초뒤에 사라짐
+            manager.enemyCount++;
+            Destroy(gameObject, 0.01f); //4초뒤에 사라짐
+            
         }
     }
 }
