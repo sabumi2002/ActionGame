@@ -6,10 +6,11 @@ public class MyBullet : MonoBehaviour
 {
     public int damage;
     public bool isMelee;
+    public bool isRock;
 
     void OnCollisionEnter(Collision collision)  //충돌 이벤트
     {
-        if (collision.gameObject.tag == "Floor")
+        if (!isRock && collision.gameObject.tag == "Floor")
         {
             Destroy(gameObject, 3);  //3초뒤에 사라짐
         }

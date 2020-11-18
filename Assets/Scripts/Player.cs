@@ -120,6 +120,7 @@ public class Player : MonoBehaviour
         //#1. 키보드에 의한 회전
         transform.LookAt(transform.position + moveVec); //플레이어를 방향키 움직이는대로 회전시켜줌
         //#2. 마우스에 의한 회전
+        /*
         if (fDown)
         {
             Ray ray = followCamera.ScreenPointToRay(Input.mousePosition);
@@ -132,6 +133,7 @@ public class Player : MonoBehaviour
                 transform.LookAt(transform.position + nextVec);
             }
         }
+        */
         
     }
 
@@ -335,11 +337,12 @@ public class Player : MonoBehaviour
                 MyBullet enemyBullet = other.GetComponent<MyBullet>();
                 health -= enemyBullet.damage;
 
-                if (other.GetComponent<Rigidbody>() != null)
-                    Destroy(other.gameObject);
+                bool isBossAtk = other.name == "Boss melee Area";
 
-                StartCoroutine(OnDamage());
+                StartCoroutine(OnDamage(isBossAtk));
             }
+            if (other.GetComponent<Rigidbody>() != null)
+                Destroy(other.gameObject);
         }
         else if (other.tag == "FinishPoint")
         {
@@ -360,18 +363,25 @@ public class Player : MonoBehaviour
             }
         }
     }
-    IEnumerator OnDamage()
+    IEnumerator OnDamage(bool isBossAtk)
     {
         isDamage = true;
         foreach (MeshRenderer mesh in meshs) {
             mesh.material.color = Color.yellow; //player 피격 색 변경
         }
+
+        if (isBossAtk)  //보스공격이면
+            rigid.AddForce(transform.forward * -25, ForceMode.Impulse); //넉백
+
         yield return new WaitForSeconds(1f);    //무적타임조정
         isDamage = false;
         foreach (MeshRenderer mesh in meshs)
         {
             mesh.material.color = Color.white;  //player 피격 색 변경
         }
+
+        if (isBossAtk)  //보스공격이면
+            rigid.velocity = Vector3.zero;  //넉백종료
     }
     void OnTriggerStay(Collider other)      //d 
     {
