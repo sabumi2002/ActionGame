@@ -156,8 +156,8 @@ public class Player : MonoBehaviour
             Ray ray = followCamera.ScreenPointToRay(Input.mousePosition);
             RaycastHit rayHit;  //정보를 저장할 변수 추가
             if (Physics.Raycast(ray, out rayHit, 100))
-            {    //out: return처럼 반환값을 주어진 변수에 저장하는 키워드
-                 //ray가 어느 오브젝트에 닿았으면 rayHit에 저장해줌
+            {       //out: return처럼 반환값을 주어진 변수에 저장하는 키워드
+                    //ray가 어느 오브젝트에 닿았으면 rayHit에 저장해줌
                 Vector3 nextVec = rayHit.point - transform.position;    //rayCasthit의 마우스 클릭 위치 활용하여 회전을 구현
                 nextVec.y = 10;
 
