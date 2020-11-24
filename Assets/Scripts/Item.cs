@@ -18,7 +18,7 @@ public class Item : MonoBehaviour
     }
     void Update()
     {
-        transform.Rotate(Vector3.up * 20 * Time.deltaTime); //회전시키는 함수
+        transform.Rotate(Vector3.up * 20 * Time.deltaTime);     //회전시키는 함수
     }
 
     void OnCollisionEnter(Collision collision)
