@@ -358,7 +358,7 @@ public class Player : MonoBehaviour
             else
             {
                 //restart..
-                SceneManager.LoadScene(manager.stage);
+                //SceneManager.LoadScene(manager.stage);
 
             }
         }
