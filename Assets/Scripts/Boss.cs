@@ -60,7 +60,7 @@ public class Boss : Enemy
                 StartCoroutine(RockShot());
                 break;
             case 4:
-                //점프공격 패턴
+                // 점프공격 패턴
                 StartCoroutine(Taunt());
                 break;
         }
