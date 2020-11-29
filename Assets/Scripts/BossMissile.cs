@@ -15,6 +15,6 @@ public class BossMissile : MyBullet
     
     void Update()
     {
-        nav.SetDestination(target.position);    //추적
+        nav.SetDestination(target.position);      //추적
     }
 }
