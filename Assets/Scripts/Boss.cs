@@ -51,12 +51,12 @@ public class Boss : Enemy
         switch (ranAction) {
             case 0:
             case 1:
-                //미사일 발사 패턴
+                // 미사일 발사 패턴
                 StartCoroutine(MissileShot());
                 break;
             case 2:
             case 3:
-                //돌 굴러가는 패턴
+                // 돌 굴러가는 패턴
                 StartCoroutine(RockShot());
                 break;
             case 4:
