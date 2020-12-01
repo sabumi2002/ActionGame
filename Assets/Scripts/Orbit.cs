@@ -10,7 +10,7 @@ public class Orbit : MonoBehaviour
 
     void Start()
     {
-        offset = transform.position - target.position;  //지금 현재 위치에서 타겟 위치를 뺀다. (플레이어와 수륙탄과의 차이값이 나옴)
+        offset = transform.position - target.position;  //지금 현재 위치에서 타겟 위치를 뺀다.  (플레이어와 수륙탄과의 차이값이 나옴)
     }
 
     void Update()
