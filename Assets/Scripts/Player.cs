@@ -20,7 +20,8 @@ public class Player : MonoBehaviour
     public int ammo;    //탄약 변수 생성
     public int coin;        //동전
     public int health;     //체력
-    
+
+    public int score;
 
     public int maxAmmo;    //최대치
     public int maxCoin;
@@ -47,7 +48,7 @@ public class Player : MonoBehaviour
     bool isFireReady = true;   //공격준비
     bool isBorder;
     bool isDamage;
-
+    bool isShop;
     
 
     Vector3 moveVec;
@@ -58,7 +59,7 @@ public class Player : MonoBehaviour
     MeshRenderer[] meshs;   //Player 피격 색깔 넣기위해 사용
 
     GameObject nearObject;  //최근에 어떤 무기오브젝트를 실행했는지 알기위해 사용
-    Weapon equipWeapon; //장착중인 웨폰은 어떤것입니까?  무기가 여러개 겹치게 들지않기위해 사용
+    public Weapon equipWeapon; //장착중인 웨폰은 어떤것입니까?  무기가 여러개 겹치게 들지않기위해 사용
     int equipWeaponIndex = -1;
     float fireDelay;    //공격딜레이
 
@@ -68,6 +69,9 @@ public class Player : MonoBehaviour
         rigid = GetComponent<Rigidbody>();
         anim = GetComponentInChildren<Animator>();
         meshs = GetComponentsInChildren<MeshRenderer>();
+
+        Debug.Log(PlayerPrefs.GetInt("MaxScore"));
+        //PlayerPrefs.SetInt("MaxScore", 12500); //유니티에서 제공하는 간단한 저장 기능
     }
     void Update()
     {
@@ -179,7 +183,7 @@ public class Player : MonoBehaviour
         fireDelay += Time.deltaTime;    //매프레임 소비한 시간을 더해줌
         isFireReady = equipWeapon.rate < fireDelay;  //공격딜레이에 시간을 더해주고 공격가능 여부를 확인
 
-        if (fDown && isFireReady && !isDodge && !isSwap) {
+        if (fDown && isFireReady && !isDodge && !isSwap && !isShop) {
             equipWeapon.Use();  //조건이 충족되면 무기에 있는 함수 실행
             anim.SetTrigger(equipWeapon.type == Weapon.Type.Melee ? "doSwing" : "doShot"); //무기타입에따라 다른 트리거 실행
             fireDelay = 0;  //공격딜레이를 0으로 돌려서 다음공격까지 기다리도록 작성
@@ -194,7 +198,8 @@ public class Player : MonoBehaviour
             return;
         if (ammo == 0)
             return;
-        if (rDown && !isDodge && !isJump && !isSwap && isFireReady) {
+        if (rDown && !isDodge && !isJump && !isSwap && isFireReady && !isShop)
+        {
             anim.SetTrigger("doReload");
             isReload = true;
 
@@ -210,7 +215,7 @@ public class Player : MonoBehaviour
     }
     void Dodge()
     {
-        if (jDown && moveVec != Vector3.zero && !isJump && !isDodge && !isSwap)    //움직이면서 점프할때 회피모션
+        if (jDown && moveVec != Vector3.zero && !isJump && !isDodge && !isSwap && !isShop)    //움직이면서 점프할때 회피모션
         {
             dodgeVec = moveVec; //dodge 사용중일때 moveVec 복사 ( Move()에서 사용됨 )
             speed *= 2;             //스피드 2배 상승
@@ -241,7 +246,8 @@ public class Player : MonoBehaviour
         if (sDown2) weaponIndex = 1;
         if (sDown3) weaponIndex = 2;
 
-        if ((sDown1 || sDown2 || sDown3) && !isJump && !isDodge) {
+        if ((sDown1 || sDown2 || sDown3) && !isJump && !isDodge && !isShop)
+        {
             if(equipWeapon != null)
                 equipWeapon.gameObject.SetActive(false);
 
@@ -271,7 +277,24 @@ public class Player : MonoBehaviour
 
                 Destroy(nearObject);    //먹은 아이템 사라지게만듬
             }
+            /*
+            else if (nearObject.tag == "Shop")
+            {
+                Shop shop = nearObject.GetComponent<Shop>();
+                shop.Enter(this);
+                isShop = true;
+            }
+             */
         }
+        else if (nearObject != null && !isJump && !isDodge) {
+            if (nearObject.tag == "Shop")
+            {
+                Shop shop = nearObject.GetComponent<Shop>();
+                shop.Enter(this);
+                isShop = true;
+            }
+        }
+        
     }
 
     void FreezeRotation()
@@ -362,6 +385,7 @@ public class Player : MonoBehaviour
 
             }
         }
+        
     }
     IEnumerator OnDamage(bool isBossAtk)
     {
@@ -385,14 +409,21 @@ public class Player : MonoBehaviour
     }
     void OnTriggerStay(Collider other)      //d 
     {
-        if (other.tag == "Weapon")
+        if (other.tag == "Weapon" || other.tag == "Shop")   // shop태그를 nearObject에 저장하고 사용하기
             nearObject = other.gameObject;
 
         
     }
-    void OnTriggerExit(Collider other)
+    void OnTriggerExit(Collider other)  
     {
         if (other.tag == "Weapon")
             nearObject = null;
+        else if (other.tag == "Shop")
+        {
+            Shop shop = nearObject.GetComponent<Shop>();
+            shop.Exit();
+            isShop = false;
+            nearObject = null;
+        }
     }
 }
