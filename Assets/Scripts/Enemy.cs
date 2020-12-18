@@ -5,15 +5,19 @@ using UnityEngine.AI;
 
 public class Enemy : MonoBehaviour
 {
-    public GameManagerLogic manager;
-    public int enemyDead;
+    private int enemyCount = 0; //죽을때 오류수정할려고 붙임
+
     public enum Type { A, B, C , D};   //몬스터마다 구분할수있게 함
     public Type enemyType;  //enum 구분한걸 저장할수있음
     public int maxHealth;
     public int curHealth;
+    public int score;
+    public GameManager manager;
+
     public Transform target;
     public BoxCollider meleeArea;
     public GameObject bullet;
+    public GameObject[] coins;
     public bool isChase;
     public bool isAttack;
     public bool isDead;
@@ -178,6 +182,7 @@ public class Enemy : MonoBehaviour
 
         if (curHealth > 0)
         {
+            yield return new WaitForSeconds(0.1f);
             foreach (MeshRenderer mesh in meshs)
                 mesh.material.color = Color.white;
         }
@@ -190,7 +195,30 @@ public class Enemy : MonoBehaviour
             isChase = false;    //적이 죽는 시점에서도 애니메이션과 플래그 셋팅
             nav.enabled = false;    //사망리액션을 유지하기위해 비활성화
             anim.SetTrigger("doDie");
-            
+            Player player = target.GetComponent<Player>();
+            player.score += score;
+            int ranCoin = Random.Range(0, 3);
+            Instantiate(coins[ranCoin], transform.position, Quaternion.identity);
+
+            enemyCount++;
+            if (enemyCount == 1)
+            {
+                switch (enemyType)
+                {
+                    case Type.A:
+                        manager.enemyCntA--;
+                        break;
+                    case Type.B:
+                        manager.enemyCntB--;
+                        break;
+                    case Type.C:
+                        manager.enemyCntC--;
+                        break;
+                    case Type.D:
+                        manager.enemyCntD--;
+                        break;
+                }
+            }
             /////////////
             if (isGrenade)//수류탄 사망리액션은 큰힘과 회전을 추가
             {
@@ -209,12 +237,9 @@ public class Enemy : MonoBehaviour
                 
             }   
 
-            enemyDead++;
-            if (enemyDead==1)
-                manager.enemyCount++;
+            
 
-            if(enemyType != Type.D)
-                Destroy(gameObject, 0.01f); //4초뒤에 사라짐
+            Destroy(gameObject, 4); //4초뒤에 사라짐
             
         }
     }

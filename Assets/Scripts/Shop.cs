@@ -43,10 +43,11 @@ public class Shop : MonoBehaviour
     }
 
     IEnumerator Talk() {
+        
         talkText.text = talkData[1];
         yield return new WaitForSeconds(2f);
         talkText.text = talkData[0];
-
+        
     }
 }
  
